@@ -110,24 +110,37 @@ for subject = 1:length(subjects) - 2
 
             % Get t-map
             data_path = [DATA_ROOT study '/' subjectString '/func/' subfoldername '/spmT_' experimentString '_s' num2str(smt) '.nii'];
+            % spm_vol read header information from an nii file
             V = spm_vol(data_path);
+            % spm_read_vols read actual data (4D nii data)
             [tmap, aa] = spm_read_vols(V);
 
             % Load SPM file (containing design specification and model parameter estimation)
+            % This command loads an SPM file to the workspace,
+            % resulting in a variable named SPM that contains a lot of unknown properties.
             clear SPM
             data_path = [DATA_ROOT study '/' subjectString '/func/' subfoldername '/SPM_' experimentString '_s' num2str(smt) '.mat'];
             load(data_path);
 
             % Calculate cluster extent threshold, for first cluster
             % defining threshold
+            % corrclusth calculate the corrected cluster size threshold for a given alpha(0.05 here).
+            % the returned value k should be the corrected threshold
             [k, Pc] = corrclusth(SPM, clusterDefiningThreshold1, 0.05, 1:100000);
+
             % Apply cluster defining threshold 1
             STAT = 'T';
-            df = [1 SPM.xX.erdf];
+            df = [1 SPM.xX.erdf]; % This is magic
+            % spm_u returns the uncorrected critical threshold at a specified significance
+            % spm_u(critical probability alpha, df?, stat = T)
+            % the returned u is the uncorrected critical height
             u = spm_u(clusterDefiningThreshold1, df, STAT);
             indices = find(tmap > u);
+
+            % Still don't know what this function does
             % Get size of largest cluster
             max_cluster = max_extent(tmap, indices);
+
             if max_cluster >= k
                 significantActivations(expt, smt, 1, subject) = 1;
                 disp('Significant activation detected!')
