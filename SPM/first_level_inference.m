@@ -122,8 +122,7 @@ for subject = 1:length(subjects) - 2
             data_path = [DATA_ROOT study '/' subjectString '/func/' subfoldername '/SPM_' experimentString '_s' num2str(smt) '.mat'];
             load(data_path);
 
-            % Calculate cluster extent threshold, for first cluster
-            % defining threshold
+            % Calculate cluster extent threshold, for the first cluster defining threshold
             % corrclusth calculate the corrected cluster size threshold for a given alpha(0.05 here).
             % the returned value k should be the corrected threshold
             [k, Pc] = corrclusth(SPM, clusterDefiningThreshold1, 0.05, 1:100000);
@@ -135,6 +134,8 @@ for subject = 1:length(subjects) - 2
             % spm_u(critical probability alpha, df?, stat = T)
             % the returned u is the uncorrected critical height
             u = spm_u(clusterDefiningThreshold1, df, STAT);
+            % now indices contains the linear index of the elements in tmap
+            % that is larger than u, the uncorrected critical height.
             indices = find(tmap > u);
 
             % Still don't know what this function does
