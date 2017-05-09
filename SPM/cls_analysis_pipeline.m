@@ -25,7 +25,10 @@ end
 % Beijing
 if strcmp(config.dataset, 'Beijing')
     TR = 2;
-    TRs = 225;
+    % original 225 time points
+    % TRs = 225;
+    % after removing 10 points
+    TRs = 215;
     study = 'Beijing';
     load randomEventsBeijing.mat
 end
@@ -99,9 +102,9 @@ content = [];
 %% Classical Statistical Analysis
 %--------------------------------------------------------------------------
 for subject = start_subj:end_subj
-	subjectString = subjects(subject+2).name;
-	data_path = [DATA_ROOT study '/' subjectString '/']; % a single subject's data path
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    subjectString = subjects(subject+2).name;
+    data_path = [DATA_ROOT study '/' subjectString '/']; % a single subject's data path
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% CLASSICAL STATISTICAL ANALYSIS
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -143,7 +146,7 @@ for subject = start_subj:end_subj
             
             scans = {};
             for t = 1:TRs
-                scans{t} = [DATA_ROOT study '/' subjectString '/func/' subfoldername '/Filtered_4DVolume.nii,' num2str(t)];
+                scans{t} = [DATA_ROOT study '/' subjectString '/func/' subfoldername '/processed.nii,' num2str(t)];
             end
             
             jobs{job}.spm.stats{1}.fmri_spec.sess.scans = reshape(scans, [length(scans) 1]);

@@ -2,6 +2,8 @@
 
 close all;
 
+BK = '~/Documents/SeniorResearch/ParametricMultisubjectfMRI/SPM';
+
 logfilename = sprintf('log-%s.txt', datetime);
 logfilepath = ['/home/geyx/Documents/logs/' logfilename];
 
@@ -64,13 +66,15 @@ config.experimentList = [3];
 content = sprintf('%s  Starting.\n', datetime);
 myLog(logfilepath, content);
 
-config.subfoldername = 'DPARSFA_default_global';
-config.reportname1 = 'DPARSFA_default_global';
-config.reportname2 = 'DPARSFA_default_global'
-
+config.subfoldername = 'DPARSFA_10point_global_RWSDCF';
+config.reportname1 = 'DPARSFA_10point_global_RWSDCF';
+config.reportname2 = 'DPARSFA_10point_global_RWSDCF'
+content = sprintf('%s  subfoldername: DPARSFA_10point_global_RWSDCF.\n', datetime);
+myLog(logfilepath, content);
 % perform classical statistical analysis
 
 parfor n = 1:8
+% for n = 1:8
 	startsubj = 1 + (n - 1) * 25;
 	endsubj = n*25;
 	if n == 8
@@ -78,9 +82,12 @@ parfor n = 1:8
 	end
 	cls_analysis_pipeline(config, startsubj, endsubj, n);
 end
-
+% cls_analysis_pipeline(config, 198, 198, 1);
 content = sprintf('%s  Classical statistical analysis finished.\n', datetime);
 myLog(logfilepath, content);
+
+% fprintf(1, '%s Program paused.\n', datetime);
+% pause;
 
 % perform fist level analysis
 
@@ -110,4 +117,7 @@ FWE1 = sum(significantDifferences(:, 1, 1, 3)) / 1000;
 fprintf(reportf, 'Current FWE 1 is %f for 6 mm of smoothing, experiment 3 and first cluster defining threshold.\n', FWE1);
 FWE2 = sum(significantDifferences(:, 1, 2, 3)) / 1000;
 fprintf(reportf, 'Current FWE 2 is %f for 6 mm of smoothing, experiment 3 and second cluster defining threshold.\n', FWE2);
+fprintf(reportf, 'Errors: %d.\n', sum(errors(:, 1, 3)));
 fclose(reportf);
+
+fprintf(1, '%s Finished.\n', datetime);
